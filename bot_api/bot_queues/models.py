@@ -1,35 +1,6 @@
 from django.db import models
 
 
-class City(models.Model):
-    city_id = models.IntegerField()
-    party = models.BooleanField()
-    triumph = models.BooleanField()
-    theater = models.BooleanField()
-
-
-class BuildingOrder(models.Model):
-    City = models.ForeignKey(City, on_delete=models.CASCADE, default=None)
-    order_id = models.IntegerField()
-    player_id = models.IntegerField()
-    player_world = models.CharField(max_length=20)
-    town_id = models.IntegerField()
-    type = models.CharField(max_length=20)
-    item_name = models.CharField(max_length=100)
-    count = models.IntegerField()
-    added = models.DateTimeField()
-
-
-class UnitsOrder(models.Model):
-    City = models.ForeignKey(City, on_delete=models.CASCADE, default=None)
-    pass
-
-
-class ShipOrder(models.Model):
-    City = models.ForeignKey(City, on_delete=models.CASCADE, default=None)
-    pass
-
-
 class AutoBuildSettings(models.Model):
     autostart = models.BooleanField()
     enable_building = models.BooleanField()
@@ -57,7 +28,6 @@ class AssistantSettings(models.Model):
 
 class AutoCultureSettings(models.Model):
     autostart = models.BooleanField()
-    City = models.ForeignKey(City, on_delete=models.CASCADE)
 
 
 class PlayerInfo(models.Model):
@@ -65,15 +35,51 @@ class PlayerInfo(models.Model):
     premium_time = models.IntegerField()
     trial_time = models.IntegerField()
     facebook_like = models.IntegerField()
-    AutoBuildSettings = models.OneToOneField(
+    autobuild_settings = models.OneToOneField(
         AutoBuildSettings, on_delete=models.CASCADE, blank=True, null=True)
-    AutoFarmSettings = models.OneToOneField(
+    autofarm_settings = models.OneToOneField(
         AutoFarmSettings, on_delete=models.CASCADE, blank=True, null=True)
-    AutoCultureSettings = models.OneToOneField(
+    autoculture_settings = models.OneToOneField(
         AutoCultureSettings, on_delete=models.CASCADE, blank=True, null=True)
-    AssistantSettings = models.OneToOneField(
+    assistant_settings = models.OneToOneField(
         AssistantSettings, on_delete=models.CASCADE, blank=True, null=True)
-    City = models.ForeignKey(City, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return ("Jugador %s" % self.player_name)
+
+
+class City(models.Model):
+    city_id = models.IntegerField()
+    party = models.BooleanField()
+    triumph = models.BooleanField()
+    theater = models.BooleanField()
+    player = models.ForeignKey(
+        PlayerInfo, related_name='building_queue', on_delete=models.CASCADE, blank=True, null=True)
+    auto_culture = models.ForeignKey(
+        AutoCultureSettings, on_delete=models.CASCADE, blank=True, null=True)
+
+
+class BuildingOrder(models.Model):
+    City = models.ForeignKey(
+        City, on_delete=models.CASCADE, related_name='aaa', default=None)
+    order_id = models.IntegerField()
+    player_id = models.IntegerField()
+    player_world = models.CharField(max_length=20)
+    town_id = models.IntegerField()
+    type = models.CharField(max_length=20)
+    item_name = models.CharField(max_length=100)
+    count = models.IntegerField()
+    added = models.DateTimeField()
+
+    def __str__(self) -> str:
+        return ("Item: %s, Town Id : %s" % (self.item_name, self.town_id))
+
+
+class UnitsOrder(models.Model):
+    City = models.ForeignKey(City, on_delete=models.CASCADE, default=None)
+    pass
+
+
+class ShipOrder(models.Model):
+    City = models.ForeignKey(City, on_delete=models.CASCADE, default=None)
+    pass
