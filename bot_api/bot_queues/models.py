@@ -39,15 +39,15 @@ class AutoCultureCitySettings(models.Model):
 class PlayerInfo(models.Model):
     player_id = models.IntegerField(primary_key=True)
     player_name = models.CharField(max_length=100)
-    premium_time = models.IntegerField()
-    trial_time = models.IntegerField()
-    facebook_like = models.IntegerField()
+    premium_time = models.IntegerField(blank=True, null=True)
+    trial_time = models.IntegerField(blank=True, null=True)
+    facebook_like = models.IntegerField(blank=True, null=True)
     autobuild_settings = models.OneToOneField(
         AutoBuildSettings, on_delete=models.CASCADE, blank=True, null=True)
     autofarm_settings = models.OneToOneField(
         AutoFarmSettings, on_delete=models.CASCADE, blank=True, null=True)
     autoculture_settings = models.OneToOneField(
-        AutoCultureSettings, on_delete=models.CASCADE, blank=True, null=True)
+        AutoCultureSettings, on_delete=models.CASCADE, blank=True, null=True, related_name='autoculture_settings')
     assistant_settings = models.OneToOneField(
         AssistantSettings, on_delete=models.CASCADE, blank=True, null=True)
 
