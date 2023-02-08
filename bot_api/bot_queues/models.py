@@ -30,7 +30,14 @@ class AutoCultureSettings(models.Model):
     autostart = models.BooleanField()
 
 
+class AutoCultureCitySettings(models.Model):
+    party = models.BooleanField()
+    triumph = models.BooleanField()
+    theater = models.BooleanField()
+
+
 class PlayerInfo(models.Model):
+    player_id = models.IntegerField(primary_key=True)
     player_name = models.CharField(max_length=100)
     premium_time = models.IntegerField()
     trial_time = models.IntegerField()
@@ -49,14 +56,11 @@ class PlayerInfo(models.Model):
 
 
 class City(models.Model):
-    city_id = models.IntegerField()
-    party = models.BooleanField()
-    triumph = models.BooleanField()
-    theater = models.BooleanField()
+    city_id = models.IntegerField(primary_key=True)
     player = models.ForeignKey(
         PlayerInfo, related_name='building_queue', on_delete=models.CASCADE, blank=True, null=True)
-    auto_culture = models.ForeignKey(
-        AutoCultureSettings, on_delete=models.CASCADE, blank=True, null=True)
+    auto_culture = models.OneToOneField(
+        AutoCultureCitySettings, on_delete=models.CASCADE, blank=True, null=True)
 
 
 class BuildingOrder(models.Model):
