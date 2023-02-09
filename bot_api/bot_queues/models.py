@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 
 
 class AutoBuildSettings(models.Model):
@@ -30,15 +31,20 @@ class AutoCultureSettings(models.Model):
     autostart = models.BooleanField()
 
 
-class AutoCultureCitySettings(models.Model):
+class AutoCultureTownSettings(models.Model):
     party = models.BooleanField()
     triumph = models.BooleanField()
     theater = models.BooleanField()
 
 
 class PlayerInfo(models.Model):
-    player_id = models.IntegerField(primary_key=True)
+    locale_lang = models.CharField(
+        max_length=50, blank=True, null=True, default="")
+    player_id = models.IntegerField()
     player_name = models.CharField(max_length=100)
+    world_id = models.CharField(
+        max_length=50, blank=True, null=True, default="")
+    premium_grepolis = models.BooleanField(default=False)
     premium_time = models.IntegerField(blank=True, null=True)
     trial_time = models.IntegerField(blank=True, null=True)
     facebook_like = models.IntegerField(blank=True, null=True)
@@ -55,35 +61,34 @@ class PlayerInfo(models.Model):
         return ("Jugador %s" % self.player_name)
 
 
-class City(models.Model):
-    city_id = models.IntegerField(primary_key=True)
+class Town(models.Model):
+    town_id = models.IntegerField()
     player = models.ForeignKey(
         PlayerInfo, related_name='building_queue', on_delete=models.CASCADE, blank=True, null=True)
     auto_culture = models.OneToOneField(
-        AutoCultureCitySettings, on_delete=models.CASCADE, blank=True, null=True)
+        AutoCultureTownSettings, on_delete=models.CASCADE, blank=True, null=True)
 
 
 class BuildingOrder(models.Model):
-    City = models.ForeignKey(
-        City, on_delete=models.CASCADE, related_name='aaa', default=None)
-    order_id = models.IntegerField()
+    Towns = models.ForeignKey(
+        Town, on_delete=models.CASCADE, related_name='cities', default=None, null=True)
+    order_id = models.IntegerField(default=1)
     player_id = models.IntegerField()
     player_world = models.CharField(max_length=20)
     town_id = models.IntegerField()
-    type = models.CharField(max_length=20)
+    type = models.CharField(max_length=20, default="building")
     item_name = models.CharField(max_length=100)
-    count = models.IntegerField()
-    added = models.DateTimeField()
+    count = models.IntegerField(default=1)
+    added = models.DateTimeField(
+        default=datetime.now())
 
     def __str__(self) -> str:
         return ("Item: %s, Town Id : %s" % (self.item_name, self.town_id))
 
 
 class UnitsOrder(models.Model):
-    City = models.ForeignKey(City, on_delete=models.CASCADE, default=None)
-    pass
+    Towns = models.ForeignKey(Town, on_delete=models.CASCADE, default=None)
 
 
 class ShipOrder(models.Model):
-    City = models.ForeignKey(City, on_delete=models.CASCADE, default=None)
-    pass
+    Towns = models.ForeignKey(Town, on_delete=models.CASCADE, default=None)
