@@ -5,6 +5,11 @@ from . import views
 router = routers.DefaultRouter()
 router.register(r'players', views.PlayerInfoViewSet)
 router.register(r'buildingorder', views.BuildingOrderViewSet)
+router.register(r'buildsettings', views.AutoBuildSettingsViewSet)
+router.register(r'farmsettings', views.AutoFarmSettingsViewSet)
+router.register(r'assistantsettings', views.AssistantSettingsViewSet)
+router.register(r'culturesettings', views.AutoCultureSettingsViewSet)
+router.register(r'culturetownsettings', views.AutoCultureTownSettingsViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

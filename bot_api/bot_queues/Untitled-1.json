@@ -1,0 +1,64 @@
+{
+    "player_name": "sasuke9587",
+    "premium_time": 1589394914,
+    "trial_time": 1584265521,
+    "facebook_like": 0,
+    "autofarm_settings": {
+        "autostart": true,
+        "method": 300,
+        "timebetween": 9,
+        "skipwhenfull": true,
+        "lowresfirst": true,
+        "stoplootbelow": true
+    },
+    "autoculture_settings": {
+        "autostart": true,
+        "towns": {
+            "12016": {
+                "party": false,
+                "triumph": false,
+                "theater": false
+            }
+        }
+    },
+    "autobuild_settings": {
+        "autostart": true,
+        "enable_building": true,
+        "enable_units": true,
+        "enable_ships": true,
+        "timeinterval": 120,
+        "instant_buy": false
+    },
+    "assistant_settings": {
+        "town_names": true,
+        "player_name": true,
+        "alliance_name": true,
+        "auto_relogin": 0
+    },
+    "building_queue": {
+        "12016": [
+            {
+                "id": 2934080,
+                "player_id": 92520,
+                "player_world": "es113",
+                "town_id": 12016,
+                "type": "building",
+                "item_name": "main",
+                "count": 1,
+                "added": "2023-02-07T14:32:02.000Z"
+            },
+            {
+                "id": 2934081,
+                "player_id": 92520,
+                "player_world": "es113",
+                "town_id": 12016,
+                "type": "building",
+                "item_name": "main",
+                "count": 1,
+                "added": "2023-02-07T14:32:04.000Z"
+            }
+        ]
+    },
+    "units_queue": {},
+    "ships_queue": {}
+}

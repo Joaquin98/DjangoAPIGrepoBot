@@ -9,6 +9,8 @@ class AutoBuildSettings(models.Model):
     enable_ships = models.BooleanField()
     timeinterval = models.IntegerField()
     instant_buy = models.BooleanField()
+    player_id = models.IntegerField()
+    world_id = models.CharField(max_length=30)
 
 
 class AutoFarmSettings(models.Model):
@@ -18,6 +20,8 @@ class AutoFarmSettings(models.Model):
     skipwhenfull = models.BooleanField()
     lowresfirst = models.BooleanField()
     stoplootbelow = models.BooleanField()
+    player_id = models.IntegerField(default=None)
+    world_id = models.CharField(max_length=30, default=None)
 
 
 class AssistantSettings(models.Model):
@@ -25,16 +29,23 @@ class AssistantSettings(models.Model):
     player_name = models.BooleanField()
     alliance_name = models.BooleanField()
     auto_relogin = models.IntegerField()
+    player_id = models.IntegerField(default=None)
+    world_id = models.CharField(max_length=30, default=None)
 
 
 class AutoCultureSettings(models.Model):
     autostart = models.BooleanField()
+    player_id = models.IntegerField(default=None)
+    world_id = models.CharField(max_length=30, default=None)
 
 
 class AutoCultureTownSettings(models.Model):
     party = models.BooleanField()
     triumph = models.BooleanField()
     theater = models.BooleanField()
+    player_id = models.IntegerField(default=None)
+    town_id = models.IntegerField(default=None)
+    world_id = models.CharField(max_length=30, default=None)
 
 
 class PlayerInfo(models.Model):

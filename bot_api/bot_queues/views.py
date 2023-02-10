@@ -34,3 +34,53 @@ class BuildingOrderViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return BuildingOrderInputSerializer
         return BuildingOrderSerializer
+
+
+class AutoBuildSettingsViewSet(viewsets.ModelViewSet):
+    queryset = AutoBuildSettings.objects.all()
+    serializer_class = AutoBuildSettingsSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return AutoBuildSettingsInputSerializer
+        return AutoBuildSettingsSerializer
+
+
+class AutoFarmSettingsViewSet(viewsets.ModelViewSet):
+    queryset = AutoFarmSettings.objects.all()
+    serializer_class = AutoFarmSettingsSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return AutoFarmSettingsInputSerializer
+        return AutoFarmSettingsSerializer
+
+
+class AssistantSettingsViewSet(viewsets.ModelViewSet):
+    queryset = AssistantSettings.objects.all()
+    serializer_class = AssistantSettingsSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return AssistantSettingsInputSerializer
+        return AssistantSettingsSerializer
+
+
+class AutoCultureSettingsViewSet(viewsets.ModelViewSet):
+    queryset = AutoCultureSettings.objects.all()
+    serializer_class = AutoCultureSettingsSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return AutoCultureSettingsInputSerializer
+        return AutoCultureSettingsSerializer
+
+
+class AutoCultureTownSettingsViewSet(viewsets.ModelViewSet):
+    queryset = AutoCultureTownSettings.objects.all()
+    serializer_class = AutoCultureTownSettingsSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return AutoCultureTownSettingsInputSerializer
+        return AutoCultureTownSettingsSerializer
