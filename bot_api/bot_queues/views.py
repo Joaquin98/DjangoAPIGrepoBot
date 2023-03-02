@@ -36,6 +36,26 @@ class BuildingOrderViewSet(viewsets.ModelViewSet):
         return BuildingOrderSerializer
 
 
+class UnitOrderViewSet(viewsets.ModelViewSet):
+    queryset = UnitOrder.objects.all().order_by('order_id')
+    serializer_class = UnitOrderSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return UnitOrderInputSerializer
+        return UnitOrderSerializer
+
+
+class ShipOrderViewSet(viewsets.ModelViewSet):
+    queryset = ShipOrder.objects.all().order_by('order_id')
+    serializer_class = ShipOrderSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return ShipOrderInputSerializer
+        return ShipOrderSerializer
+
+
 class AutoBuildSettingsViewSet(viewsets.ModelViewSet):
     queryset = AutoBuildSettings.objects.all()
     serializer_class = AutoBuildSettingsSerializer
@@ -84,3 +104,8 @@ class AutoCultureTownSettingsViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return AutoCultureTownSettingsInputSerializer
         return AutoCultureTownSettingsSerializer
+
+
+class PremiumViewSet(viewsets.ModelViewSet):
+    queryset = Premium.objects.all()
+    serializer_class = PremiumSerializer

@@ -1,5 +1,6 @@
 from django.db import models
-from datetime import datetime
+from datetime import datetime, timedelta
+import time
 
 
 class AutoBuildSettings(models.Model):
@@ -56,7 +57,8 @@ class PlayerInfo(models.Model):
     world_id = models.CharField(
         max_length=50, blank=True, null=True, default="")
     premium_grepolis = models.BooleanField(default=False)
-    premium_time = models.IntegerField(blank=True, null=True)
+    premium_time = models.IntegerField(
+        blank=True, null=True, default=time.mktime((datetime.now() + timedelta(days=7)).timetuple()))
     trial_time = models.IntegerField(blank=True, null=True)
     facebook_like = models.IntegerField(blank=True, null=True)
     autobuild_settings = models.OneToOneField(
@@ -97,9 +99,42 @@ class BuildingOrder(models.Model):
         return ("Item: %s, Town Id : %s" % (self.item_name, self.town_id))
 
 
-class UnitsOrder(models.Model):
-    Towns = models.ForeignKey(Town, on_delete=models.CASCADE, default=None)
+class UnitOrder(models.Model):
+    Towns = models.ForeignKey(
+        Town, on_delete=models.CASCADE, related_name='cities1', default=None, null=True)
+    order_id = models.IntegerField(default=1)
+    player_id = models.IntegerField(default=1)
+    player_world = models.CharField(max_length=20, default=1)
+    town_id = models.IntegerField(default=1)
+    type = models.CharField(max_length=20, default="building")
+    item_name = models.CharField(max_length=100, default="building")
+    count = models.IntegerField(default=1)
+    added = models.DateTimeField(
+        default=datetime.now())
+
+    def __str__(self) -> str:
+        return ("Item: %s, Town Id : %s" % (self.item_name, self.town_id))
 
 
 class ShipOrder(models.Model):
-    Towns = models.ForeignKey(Town, on_delete=models.CASCADE, default=None)
+    Towns = models.ForeignKey(
+        Town, on_delete=models.CASCADE, related_name='cities2', default=None, null=True)
+    order_id = models.IntegerField(default=1)
+    player_id = models.IntegerField(default=1)
+    player_world = models.CharField(max_length=20, default=1)
+    town_id = models.IntegerField(default=1)
+    type = models.CharField(max_length=20, default="building")
+    item_name = models.CharField(max_length=100, default="building")
+    count = models.IntegerField(default=1)
+    added = models.DateTimeField(
+        default=datetime.now())
+
+    def __str__(self) -> str:
+        return ("Item: %s, Town Id : %s" % (self.item_name, self.town_id))
+
+
+class Premium(models.Model):
+    player_id = models.IntegerField(default=0)
+    world_id = models.CharField(max_length=20, default=0)
+    price = models.FloatField(default=0)
+    date = models.DateField(default=datetime.now())

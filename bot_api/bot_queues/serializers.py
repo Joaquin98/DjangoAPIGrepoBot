@@ -1,5 +1,6 @@
 from .models import *
 from rest_framework import serializers
+import time
 
 
 class AutoBuildSettingsSerializer(serializers.HyperlinkedModelSerializer):
@@ -141,6 +142,20 @@ class BuildingOrderSerializer(serializers.HyperlinkedModelSerializer):
                   'town_id', 'type', 'item_name', 'count', 'added')
 
 
+class UnitOrderSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = BuildingOrder
+        fields = ('order_id', 'player_id', 'player_world',
+                  'town_id', 'type', 'item_name', 'count', 'added')
+
+
+class ShipOrderSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = BuildingOrder
+        fields = ('order_id', 'player_id', 'player_world',
+                  'town_id', 'type', 'item_name', 'count', 'added')
+
+
 class TownBuildingQueueSerializer(serializers.Serializer):
     def to_representation(self, instance):
         return {instance.town_id: BuildingOrderSerializer(BuildingOrder.objects.filter(Towns=instance.pk), many=True).data}
@@ -148,12 +163,12 @@ class TownBuildingQueueSerializer(serializers.Serializer):
 
 class TownUnitsQueueSerializer(serializers.Serializer):
     def to_representation(self, instance):
-        return {instance.town_id: BuildingOrderSerializer(UnitsOrder.objects.filter(Towns=instance.pk), many=True).data}
+        return {instance.town_id: UnitOrderSerializer(UnitOrder.objects.filter(Towns=instance.pk), many=True).data}
 
 
 class TownShipQueueSerializer(serializers.Serializer):
     def to_representation(self, instance):
-        return {instance.town_id: BuildingOrderSerializer(ShipOrder.objects.filter(Towns=instance.pk), many=True).data}
+        return {instance.town_id: ShipOrderSerializer(ShipOrder.objects.filter(Towns=instance.pk), many=True).data}
 
 
 class TownAutocultureSettingsSerializer(serializers.Serializer):
@@ -275,3 +290,89 @@ class BuildingOrderInputSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = BuildingOrder
         fields = ('player_id', 'player_world', 'town_id', 'item_name')
+
+
+class UnitOrderInputSerializer(serializers.HyperlinkedModelSerializer):
+    def save(self, **kwargs):
+
+        player = PlayerInfo.objects.get(
+            player_id=self._validated_data['player_id'],
+            world_id=self._validated_data['player_world'])
+
+        try:
+            town = player.building_queue.get(
+                town_id=self._validated_data['town_id'])
+        except Exception:
+            town = Town(
+                town_id=self._validated_data['town_id'], player=player, auto_culture=None)
+            town.save()
+
+        try:
+            order_id = town.cities.all().order_by('order_id').last().order_id + 1
+        except Exception:
+            order_id = 1
+
+        self._validated_data.update({
+            'Towns': town})
+        self._validated_data.update({'order_id': order_id})
+        return super().save(**kwargs)
+
+    class Meta:
+        model = UnitOrder
+        fields = ('player_id', 'player_world', 'town_id', 'item_name')
+
+
+class ShipOrderInputSerializer(serializers.HyperlinkedModelSerializer):
+    def save(self, **kwargs):
+
+        player = PlayerInfo.objects.get(
+            player_id=self._validated_data['player_id'],
+            world_id=self._validated_data['player_world'])
+
+        try:
+            town = player.building_queue.get(
+                town_id=self._validated_data['town_id'])
+        except Exception:
+            town = Town(
+                town_id=self._validated_data['town_id'], player=player, auto_culture=None)
+            town.save()
+
+        try:
+            order_id = town.cities.all().order_by('order_id').last().order_id + 1
+        except Exception:
+            order_id = 1
+
+        self._validated_data.update({
+            'Towns': town})
+        self._validated_data.update({'order_id': order_id})
+        return super().save(**kwargs)
+
+    class Meta:
+        model = ShipOrder
+        fields = ('player_id', 'player_world', 'town_id', 'item_name')
+
+
+class PremiumSerializer(serializers.HyperlinkedModelSerializer):
+
+    def save(self, **kwargs):
+        player = PlayerInfo.objects.get(
+            player_id=self._validated_data['player_id'],
+            world_id=self._validated_data['world_id'])
+
+        days_map = {
+            3.99: 30*86400,
+            8.99: 72*86400,
+            18.99: 156*86400,
+            48.99: 420*86400
+        }
+
+        player.premium_time = player.premium_time + \
+            days_map[self._validated_data['price']]
+
+        player.save()
+
+        return super().save(**kwargs)
+
+    class Meta:
+        model = Premium
+        fields = ('player_id', 'world_id', 'price', 'date')
