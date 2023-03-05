@@ -40,7 +40,7 @@
             {
                 "id": 2934080,
                 "player_id": 92520,
-                "player_world": "es113",
+                "world_id": "es113",
                 "town_id": 12016,
                 "type": "building",
                 "item_name": "main",
@@ -50,7 +50,7 @@
             {
                 "id": 2934081,
                 "player_id": 92520,
-                "player_world": "es113",
+                "world_id": "es113",
                 "town_id": 12016,
                 "type": "building",
                 "item_name": "main",

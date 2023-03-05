@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import *
 
 admin.site.register(BuildingOrder)
-admin.site.register(UnitsOrder)
+admin.site.register(UnitOrder)
 admin.site.register(ShipOrder)
 admin.site.register(Town)
 admin.site.register(AutoBuildSettings)

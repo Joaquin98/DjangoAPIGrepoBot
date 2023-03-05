@@ -138,21 +138,21 @@ class AutoCultureTownSettingsInputSerializer(serializers.HyperlinkedModelSeriali
 class BuildingOrderSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = BuildingOrder
-        fields = ('order_id', 'player_id', 'player_world',
+        fields = ('order_id', 'player_id', 'world_id',
                   'town_id', 'type', 'item_name', 'count', 'added')
 
 
 class UnitOrderSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = BuildingOrder
-        fields = ('order_id', 'player_id', 'player_world',
+        fields = ('order_id', 'player_id', 'world_id',
                   'town_id', 'type', 'item_name', 'count', 'added')
 
 
 class ShipOrderSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = BuildingOrder
-        fields = ('order_id', 'player_id', 'player_world',
+        fields = ('order_id', 'player_id', 'world_id',
                   'town_id', 'type', 'item_name', 'count', 'added')
 
 
@@ -160,6 +160,28 @@ class TownBuildingQueueSerializer(serializers.Serializer):
     def to_representation(self, instance):
         return {instance.town_id: BuildingOrderSerializer(BuildingOrder.objects.filter(Towns=instance.pk), many=True).data}
 
+class BuildingOrderAllSerializer(serializers.Serializer):
+
+    def to_representation(self, instance):
+        data = {}
+        item_data = super().to_representation(instance)
+        print(instance.pk)
+        player = PlayerInfo.objects.filter(player_id=instance.player_id, world_id=instance.world_id).first()
+        res = TownBuildingQueueSerializer(Town.objects.filter(player=player.pk), many=True).data
+        
+        for element in res:
+            for key, val in element.items():
+                data.update({key: val})
+        
+        data.update({'item': BuildingOrderSerializer(BuildingOrder.objects.get(pk = instance.pk)).data})
+
+        return data
+
+    class Meta:
+        model = BuildingOrder
+        fields = ('order_id', 'player_id', 'world_id',
+                'town_id', 'type', 'item_name', 'count', 'added')
+    
 
 class TownUnitsQueueSerializer(serializers.Serializer):
     def to_representation(self, instance):
@@ -267,7 +289,7 @@ class BuildingOrderInputSerializer(serializers.HyperlinkedModelSerializer):
 
         player = PlayerInfo.objects.get(
             player_id=self._validated_data['player_id'],
-            world_id=self._validated_data['player_world'])
+            world_id=self._validated_data['world_id'])
 
         try:
             town = player.building_queue.get(
@@ -289,7 +311,7 @@ class BuildingOrderInputSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = BuildingOrder
-        fields = ('player_id', 'player_world', 'town_id', 'item_name')
+        fields = ('player_id', 'world_id', 'town_id', 'item_name')
 
 
 class UnitOrderInputSerializer(serializers.HyperlinkedModelSerializer):
@@ -297,7 +319,7 @@ class UnitOrderInputSerializer(serializers.HyperlinkedModelSerializer):
 
         player = PlayerInfo.objects.get(
             player_id=self._validated_data['player_id'],
-            world_id=self._validated_data['player_world'])
+            world_id=self._validated_data['world_id'])
 
         try:
             town = player.building_queue.get(
@@ -319,7 +341,7 @@ class UnitOrderInputSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = UnitOrder
-        fields = ('player_id', 'player_world', 'town_id', 'item_name')
+        fields = ('player_id', 'world_id', 'town_id', 'item_name')
 
 
 class ShipOrderInputSerializer(serializers.HyperlinkedModelSerializer):
@@ -327,7 +349,7 @@ class ShipOrderInputSerializer(serializers.HyperlinkedModelSerializer):
 
         player = PlayerInfo.objects.get(
             player_id=self._validated_data['player_id'],
-            world_id=self._validated_data['player_world'])
+            world_id=self._validated_data['world_id'])
 
         try:
             town = player.building_queue.get(
@@ -349,7 +371,7 @@ class ShipOrderInputSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = ShipOrder
-        fields = ('player_id', 'player_world', 'town_id', 'item_name')
+        fields = ('player_id', 'world_id', 'town_id', 'item_name')
 
 
 class PremiumSerializer(serializers.HyperlinkedModelSerializer):

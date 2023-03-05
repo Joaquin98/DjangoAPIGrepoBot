@@ -33,8 +33,20 @@ class BuildingOrderViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'create':
             return BuildingOrderInputSerializer
-        return BuildingOrderSerializer
-
+        if self.action == 'list':
+            return BuildingOrderSerializer
+        if self.action == 'retrieve':
+            return BuildingOrderAllSerializer
+    
+    def create(self, request, *args, **kwargs):
+        create_response = super().create(request, *args, **kwargs).data
+        #player = PlayerInfo.objects.filter(player_id=request.data['player_id'], world_id=request.data['world_id']).first()
+        order = BuildingOrder.objects.filter(player_id = create_response['player_id'], world_id = create_response['world_id'], \
+                                             town_id = create_response['town_id']).order_by('-order_id').first()
+        self.action = 'retrieve'
+        self.lookup_url_kwarg = 'pk'
+        self.kwargs.update({'pk':order.pk})
+        return self.retrieve(request=request)
 
 class UnitOrderViewSet(viewsets.ModelViewSet):
     queryset = UnitOrder.objects.all().order_by('order_id')
