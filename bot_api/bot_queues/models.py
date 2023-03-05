@@ -77,21 +77,18 @@ class PlayerInfo(models.Model):
 class Town(models.Model):
     town_id = models.IntegerField()
     player = models.ForeignKey(
-        PlayerInfo, related_name='building_queue', on_delete=models.CASCADE, blank=True, null=True)
+        PlayerInfo, related_name='towns', on_delete=models.CASCADE, blank=True, null=True)
     auto_culture = models.OneToOneField(
         AutoCultureTownSettings, on_delete=models.CASCADE, blank=True, null=True)
 
 
 class BuildingOrder(models.Model):
-    Towns = models.ForeignKey(
-        Town, on_delete=models.CASCADE, related_name='cities', default=None, null=True)
-    order_id = models.IntegerField(default=1)
+    town_obj = models.ForeignKey(
+        Town, on_delete=models.CASCADE, related_name='building_orders', default=None, null=True)
     player_id = models.IntegerField()
     world_id = models.CharField(max_length=20)
     town_id = models.IntegerField()
-    type = models.CharField(max_length=20, default="building")
     item_name = models.CharField(max_length=100)
-    count = models.IntegerField(default=1)
     added = models.DateTimeField(
         default=datetime.now())
 
@@ -100,13 +97,11 @@ class BuildingOrder(models.Model):
 
 
 class UnitOrder(models.Model):
-    Towns = models.ForeignKey(
-        Town, on_delete=models.CASCADE, related_name='cities1', default=None, null=True)
-    order_id = models.IntegerField(default=1)
+    town_obj = models.ForeignKey(
+        Town, on_delete=models.CASCADE, related_name='unit_orders', default=None, null=True)
     player_id = models.IntegerField(default=1)
     world_id = models.CharField(max_length=20, default=1)
     town_id = models.IntegerField(default=1)
-    type = models.CharField(max_length=20, default="building")
     item_name = models.CharField(max_length=100, default="building")
     count = models.IntegerField(default=1)
     added = models.DateTimeField(
@@ -117,13 +112,11 @@ class UnitOrder(models.Model):
 
 
 class ShipOrder(models.Model):
-    Towns = models.ForeignKey(
-        Town, on_delete=models.CASCADE, related_name='cities2', default=None, null=True)
-    order_id = models.IntegerField(default=1)
+    town_obj = models.ForeignKey(
+        Town, on_delete=models.CASCADE, related_name='ship_orders', default=None, null=True)
     player_id = models.IntegerField(default=1)
     world_id = models.CharField(max_length=20, default=1)
     town_id = models.IntegerField(default=1)
-    type = models.CharField(max_length=20, default="building")
     item_name = models.CharField(max_length=100, default="building")
     count = models.IntegerField(default=1)
     added = models.DateTimeField(

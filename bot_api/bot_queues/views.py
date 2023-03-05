@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from .serializers import *
 from .models import *
 from rest_framework.response import Response
-
+from rest_framework import status
 
 class PlayerInfoViewSet(viewsets.ModelViewSet):
     queryset = PlayerInfo.objects.all().order_by('player_name')
@@ -25,48 +25,38 @@ class PlayerInfoViewSet(viewsets.ModelViewSet):
         self.kwargs.update({"pk": player.pk})
         return self.retrieve(request=request)
 
-
 class BuildingOrderViewSet(viewsets.ModelViewSet):
-    queryset = BuildingOrder.objects.all().order_by('order_id')
+    queryset = BuildingOrder.objects.all()
     serializer_class = BuildingOrderSerializer
 
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return BuildingOrderInputSerializer
-        if self.action == 'list':
-            return BuildingOrderSerializer
-        if self.action == 'retrieve':
-            return BuildingOrderAllSerializer
-    
     def create(self, request, *args, **kwargs):
-        create_response = super().create(request, *args, **kwargs).data
-        #player = PlayerInfo.objects.filter(player_id=request.data['player_id'], world_id=request.data['world_id']).first()
-        order = BuildingOrder.objects.filter(player_id = create_response['player_id'], world_id = create_response['world_id'], \
-                                             town_id = create_response['town_id']).order_by('-order_id').first()
-        self.action = 'retrieve'
-        self.lookup_url_kwarg = 'pk'
-        self.kwargs.update({'pk':order.pk})
-        return self.retrieve(request=request)
+        serializer = super().get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        super().perform_create(serializer)
+        headers = super().get_success_headers(serializer.data)
+        return Response({'order_id':serializer.instance.pk}, status=status.HTTP_201_CREATED, headers=headers)
 
 class UnitOrderViewSet(viewsets.ModelViewSet):
-    queryset = UnitOrder.objects.all().order_by('order_id')
+    queryset = UnitOrder.objects.all()
     serializer_class = UnitOrderSerializer
-
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return UnitOrderInputSerializer
-        return UnitOrderSerializer
-
+    
+    def create(self, request, *args, **kwargs):
+        serializer = super().get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        super().perform_create(serializer)
+        headers = super().get_success_headers(serializer.data)
+        return Response({'order_id':serializer.instance.pk}, status=status.HTTP_201_CREATED, headers=headers)
 
 class ShipOrderViewSet(viewsets.ModelViewSet):
-    queryset = ShipOrder.objects.all().order_by('order_id')
+    queryset = ShipOrder.objects.all()
     serializer_class = ShipOrderSerializer
 
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return ShipOrderInputSerializer
-        return ShipOrderSerializer
-
+    def create(self, request, *args, **kwargs):
+        serializer = super().get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        super().perform_create(serializer)
+        headers = super().get_success_headers(serializer.data)
+        return Response({'order_id':serializer.instance.pk}, status=status.HTTP_201_CREATED, headers=headers)
 
 class AutoBuildSettingsViewSet(viewsets.ModelViewSet):
     queryset = AutoBuildSettings.objects.all()
@@ -77,7 +67,6 @@ class AutoBuildSettingsViewSet(viewsets.ModelViewSet):
             return AutoBuildSettingsInputSerializer
         return AutoBuildSettingsSerializer
 
-
 class AutoFarmSettingsViewSet(viewsets.ModelViewSet):
     queryset = AutoFarmSettings.objects.all()
     serializer_class = AutoFarmSettingsSerializer
@@ -86,7 +75,6 @@ class AutoFarmSettingsViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return AutoFarmSettingsInputSerializer
         return AutoFarmSettingsSerializer
-
 
 class AssistantSettingsViewSet(viewsets.ModelViewSet):
     queryset = AssistantSettings.objects.all()
@@ -97,7 +85,6 @@ class AssistantSettingsViewSet(viewsets.ModelViewSet):
             return AssistantSettingsInputSerializer
         return AssistantSettingsSerializer
 
-
 class AutoCultureSettingsViewSet(viewsets.ModelViewSet):
     queryset = AutoCultureSettings.objects.all()
     serializer_class = AutoCultureSettingsSerializer
@@ -107,7 +94,6 @@ class AutoCultureSettingsViewSet(viewsets.ModelViewSet):
             return AutoCultureSettingsInputSerializer
         return AutoCultureSettingsSerializer
 
-
 class AutoCultureTownSettingsViewSet(viewsets.ModelViewSet):
     queryset = AutoCultureTownSettings.objects.all()
     serializer_class = AutoCultureTownSettingsSerializer
@@ -116,7 +102,6 @@ class AutoCultureTownSettingsViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return AutoCultureTownSettingsInputSerializer
         return AutoCultureTownSettingsSerializer
-
 
 class PremiumViewSet(viewsets.ModelViewSet):
     queryset = Premium.objects.all()
