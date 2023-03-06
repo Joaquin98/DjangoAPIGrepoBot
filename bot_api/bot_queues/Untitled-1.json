@@ -62,3 +62,18 @@
     "units_queue": {},
     "ships_queue": {}
 }
+
+
+    {
+
+        "player_id": 1,
+        "world_id": "1",
+                "autostart": false,
+                "towns": {
+                    "1": {
+                        "party": true,
+                        "triumph": true,
+                        "theater": true
+                    }
+                }
+            }

@@ -84,12 +84,6 @@ class AssistantSettingsInputSerializer(serializers.HyperlinkedModelSerializer):
         return assistant_settings_object
 
 
-class AutoCultureSettingsSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = AutoCultureSettings
-        fields = ('autostart',)
-
-
 class AutoCultureSettingsInputSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = AutoCultureSettings
@@ -139,8 +133,8 @@ class BuildingOrderSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = BuildingOrder
-        fields = ('player_id','world_id','town_id','item_name','added')
-    
+        fields = ('player_id', 'world_id', 'town_id', 'item_name', 'added')
+
     def save(self, **kwargs):
 
         player = PlayerInfo.objects.get(
@@ -156,15 +150,16 @@ class BuildingOrderSerializer(serializers.HyperlinkedModelSerializer):
 
         self._validated_data.update({
             'town_obj': town})
-        
+
         return super().save(**kwargs)
+
 
 class UnitOrderSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = UnitOrder
         fields = ('player_id', 'world_id',
                   'town_id', 'item_name', 'count', 'added')
-    
+
     def save(self, **kwargs):
 
         player = PlayerInfo.objects.get(
@@ -180,14 +175,16 @@ class UnitOrderSerializer(serializers.HyperlinkedModelSerializer):
 
         self._validated_data.update({
             'town_obj': town})
-        
+
         return super().save(**kwargs)
+
 
 class ShipOrderSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ShipOrder
         fields = ('player_id', 'world_id',
                   'town_id', 'item_name', 'count', 'added')
+
     def save(self, **kwargs):
 
         player = PlayerInfo.objects.get(
@@ -203,47 +200,77 @@ class ShipOrderSerializer(serializers.HyperlinkedModelSerializer):
 
         self._validated_data.update({
             'town_obj': town})
-        
+
         return super().save(**kwargs)
+
 
 class TownBuildingQueueSerializer(serializers.Serializer):
     def to_representation(self, instance):
         return {instance.town_id: BuildingOrderSerializer(BuildingOrder.objects.filter(town_obj=instance.pk), many=True).data}
 
+
 class TownUnitsQueueSerializer(serializers.Serializer):
     def to_representation(self, instance):
         return {instance.town_id: UnitOrderSerializer(UnitOrder.objects.filter(town_obj=instance.pk), many=True).data}
+
 
 class TownShipQueueSerializer(serializers.Serializer):
     def to_representation(self, instance):
         return {instance.town_id: ShipOrderSerializer(ShipOrder.objects.filter(town_obj=instance.pk), many=True).data}
 
-class TownAutocultureSettingsSerializer(serializers.Serializer):
-    def to_representation(self, instance):
-        return super().to_representation(instance)
 
-class AutoCultureTownSettingsSerializer2(serializers.HyperlinkedModelSerializer):
+class AutocultureTownSettingsSerializer(serializers.HyperlinkedModelSerializer):
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data.pop('town_id')
+        return data
+
     class Meta:
         model = AutoCultureTownSettings
-        fields = ('party', 'triumph', 'theater')
+        fields = ('party', 'triumph', 'theater', 'town_id')
 
-class AutocultureTownSettingsSerializer(serializers.Serializer):
-    def to_representation(self, instance):
-        return {instance.town_id: AutoCultureTownSettingsSerializer2(instance.auto_culture).data}
 
-class AutocultureSettingsSerializer(serializers.Serializer):
+class AutocultureTownIdSettingsSerializer(serializers.Serializer):
+
     def to_representation(self, instance):
+        return {instance.town_id: AutoCultureTownSettingsSerializer(instance).data}
+
+
+class AutoCultureSettingsSerializer(serializers.HyperlinkedModelSerializer):
+    town_settings = AutocultureTownIdSettingsSerializer(
+        many=True, read_only=True)
+
+    def save(self, **kwargs):
+
+        res = super().save(**kwargs)
+
+        player = PlayerInfo.objects.get(
+            player_id=self._validated_data['player_id'], world_id=self._validated_data['world_id'])
+
+        if player.autoculture_settings != None:
+            player.autoculture_settings.delete()
+
+        player.autoculture_settings = res
+        player.save()
+
+        return res
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        towns_data = data.pop('town_settings')
+        data.pop('player_id')
+        data.pop('world_id')
         new_dict = {}
-        new_dict['autostart'] = instance.autoculture_settings.autostart
-        towns_data = AutocultureTownSettingsSerializer(
-            instance.building_queue, many=True).data
-        new_towns_data = {}
-        for element in towns_data:
-            for key, value in element.items():
-                new_towns_data.update({key: value})
-        new_dict['towns'] = new_towns_data
+        for town_data in towns_data:
+            for key, value in town_data.items():
+                new_dict.update({key: value})
+        data.update({'towns': new_dict})
+        return data
 
-        return new_dict
+    class Meta:
+        model = AutoCultureSettings
+        fields = ('autostart', 'player_id', 'world_id', 'town_settings')
 
 
 class PlayerInfoInputSerializer(serializers.HyperlinkedModelSerializer):
@@ -273,13 +300,13 @@ class PlayerInfoSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_ships_queue(self, obj):
         return TownShipQueueSerializer(obj.towns.all(), many=True).data
-    
+
     def get_building_queue(self, obj):
-        return TownBuildingQueueSerializer(obj.towns.all(),many=True, read_only=True).data
+        return TownBuildingQueueSerializer(obj.towns.all(), many=True, read_only=True).data
 
     def get_autoculture_settings(self, obj):
         if obj.autoculture_settings:
-            return AutocultureSettingsSerializer(obj).data
+            return AutoCultureSettingsSerializer(obj.autoculture_settings).data
         return {}
 
     def to_representation(self, instance):
@@ -289,24 +316,28 @@ class PlayerInfoSerializer(serializers.HyperlinkedModelSerializer):
         new_dict = {}
         for element in building_queue:
             for key, val in element.items():
-                new_dict.update({key: val})
+                if len(val):
+                    new_dict.update({key: val})
         data.update({'building_queue': new_dict})
 
         units_queue = data.pop('units_queue')
         new_dict = {}
         for element in units_queue:
             for key, val in element.items():
-                new_dict.update({key: val})
+                if len(val):
+                    new_dict.update({key: val})
         data.update({'units_queue': new_dict})
 
         ships_queue = data.pop('ships_queue')
         new_dict = {}
         for element in ships_queue:
             for key, val in element.items():
-                new_dict.update({key: val})
+                if len(val):
+                    new_dict.update({key: val})
         data.update({'ships_queue': new_dict})
 
         return data
+
 
 class PremiumSerializer(serializers.HyperlinkedModelSerializer):
 

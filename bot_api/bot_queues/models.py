@@ -44,9 +44,11 @@ class AutoCultureTownSettings(models.Model):
     party = models.BooleanField()
     triumph = models.BooleanField()
     theater = models.BooleanField()
-    player_id = models.IntegerField(default=None)
+    player_id = models.IntegerField(default=None, null=True)
     town_id = models.IntegerField(default=None)
-    world_id = models.CharField(max_length=30, default=None)
+    world_id = models.CharField(max_length=30, default=None, null=True)
+    auto_culture = models.ForeignKey(
+        AutoCultureSettings, related_name='town_settings', on_delete=models.CASCADE, blank=True, null=True)
 
 
 class PlayerInfo(models.Model):
@@ -62,13 +64,13 @@ class PlayerInfo(models.Model):
     trial_time = models.IntegerField(blank=True, null=True)
     facebook_like = models.IntegerField(blank=True, null=True)
     autobuild_settings = models.OneToOneField(
-        AutoBuildSettings, on_delete=models.CASCADE, blank=True, null=True)
+        AutoBuildSettings, on_delete=models.SET_NULL, blank=True, null=True)
     autofarm_settings = models.OneToOneField(
-        AutoFarmSettings, on_delete=models.CASCADE, blank=True, null=True)
+        AutoFarmSettings, on_delete=models.SET_NULL, blank=True, null=True)
     autoculture_settings = models.OneToOneField(
-        AutoCultureSettings, on_delete=models.CASCADE, blank=True, null=True, related_name='autoculture_settings')
+        AutoCultureSettings, on_delete=models.SET_NULL, blank=True, null=True, related_name='autoculture_settings')
     assistant_settings = models.OneToOneField(
-        AssistantSettings, on_delete=models.CASCADE, blank=True, null=True)
+        AssistantSettings, on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self) -> str:
         return ("Jugador %s" % self.player_name)
