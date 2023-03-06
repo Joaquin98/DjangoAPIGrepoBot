@@ -362,10 +362,10 @@ class PremiumSerializer(serializers.HyperlinkedModelSerializer):
             world_id=self._validated_data['world_id'])
 
         days_map = {
-            3.99: 30*86400,
-            8.99: 72*86400,
-            18.99: 156*86400,
-            48.99: 420*86400
+            4.99: 30*86400,
+            9.99: 72*86400,
+            19.99: 156*86400,
+            49.99: 420*86400
         }
 
         player.premium_time = player.premium_time + \
@@ -377,4 +377,4 @@ class PremiumSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Premium
-        fields = ('player_id', 'world_id', 'price', 'date')
+        fields = ('player_id', 'world_id', 'price')
