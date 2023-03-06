@@ -135,6 +135,11 @@ class BuildingOrderSerializer(serializers.HyperlinkedModelSerializer):
         model = BuildingOrder
         fields = ('player_id', 'world_id', 'town_id', 'item_name', 'added')
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data.update({'id': instance.pk})
+        return data
+
     def save(self, **kwargs):
 
         player = PlayerInfo.objects.get(
