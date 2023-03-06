@@ -126,3 +126,13 @@ class AutoCultureTownSettingsViewSet(viewsets.ModelViewSet):
 class PremiumViewSet(viewsets.ModelViewSet):
     queryset = Premium.objects.all()
     serializer_class = PremiumSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = super().get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        super().perform_create(serializer)
+        headers = super().get_success_headers(serializer.data)
+        player = PlayerInfo.objects.get(
+            player_id=serializer.instance.player_id,
+            world_id=serializer.instance.world_id)
+        return Response({'premium_time': player.premium_time}, status=status.HTTP_201_CREATED, headers=headers)
