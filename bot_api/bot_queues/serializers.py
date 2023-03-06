@@ -165,6 +165,11 @@ class UnitOrderSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('player_id', 'world_id',
                   'town_id', 'item_name', 'count', 'added')
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data.update({'id': instance.pk})
+        return data
+
     def save(self, **kwargs):
 
         player = PlayerInfo.objects.get(
@@ -189,6 +194,11 @@ class ShipOrderSerializer(serializers.HyperlinkedModelSerializer):
         model = ShipOrder
         fields = ('player_id', 'world_id',
                   'town_id', 'item_name', 'count', 'added')
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data.update({'id': instance.pk})
+        return data
 
     def save(self, **kwargs):
 
