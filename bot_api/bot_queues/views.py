@@ -107,6 +107,8 @@ class AutoCultureSettingsViewSet(viewsets.ModelViewSet):
         for town_id, settings in request.data['towns'].items():
             settings.update({"town_id": town_id})
             town_serializer = AutocultureTownSettingsSerializer(data=settings)
+            town_serializer.is_valid()
+            town_serializer.save()
             town_serializer.instance.auto_culture = serializer.instance
             town_serializer.instance.save()
 
