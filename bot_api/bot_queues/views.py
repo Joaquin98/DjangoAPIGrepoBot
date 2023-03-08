@@ -1,3 +1,4 @@
+from http.client import METHOD_NOT_ALLOWED
 from rest_framework import viewsets
 from .serializers import *
 from .models import *
@@ -6,13 +7,23 @@ from rest_framework import status
 
 
 class PlayerInfoViewSet(viewsets.ModelViewSet):
+    http_method_names = ['get', 'post']
     queryset = PlayerInfo.objects.all().order_by('player_name')
     serializer_class = PlayerInfoSerializer
 
     def get_serializer_class(self):
+
         if self.action == 'create':
             return PlayerInfoInputSerializer
         return PlayerInfoSerializer
+
+    def list(self, request):
+        raise METHOD_NOT_ALLOWED(
+            'GET', detail='Method "GET" not allowed without lookup')
+
+    def retrieve(self, request, pk):
+        raise METHOD_NOT_ALLOWED(
+            'GET', detail='Method "GET" not allowed without lookup')
 
     def create(self, request, *args, **kwargs):
         players = PlayerInfo.objects.filter(
