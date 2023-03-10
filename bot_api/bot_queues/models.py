@@ -133,3 +133,20 @@ class Premium(models.Model):
     world_id = models.CharField(max_length=20, default=0)
     price = models.FloatField(default=0)
     date = models.DateField(default=datetime.now())
+
+
+REQUEST_CHOICES = (("Bug Report", "Bug Report"),
+                   ("Other", "Other"),
+                   ("Financial", "Financial"),
+                   ("Feature Request", "Feature Request"))
+
+
+class Support(models.Model):
+    player_id = models.IntegerField(default=0)
+    world_id = models.CharField(max_length=20, default=0)
+    player_name = models.CharField(max_length=20, default="")
+    # type = models.CharField(
+    #    max_length=20, choices=REQUEST_CHOICES, default="Other")
+    email = models.EmailField(default="")
+    subject = models.CharField(max_length=200, default="")
+    message = models.CharField(max_length=1000, default="")

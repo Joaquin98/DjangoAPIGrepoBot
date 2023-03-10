@@ -13,6 +13,7 @@ router.register(r'assistantsettings', views.AssistantSettingsViewSet)
 router.register(r'culturesettings', views.AutoCultureSettingsViewSet)
 router.register(r'culturetownsettings', views.AutoCultureTownSettingsViewSet)
 router.register(r'premium', views.PremiumViewSet)
+router.register(r'support', views.SupportViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

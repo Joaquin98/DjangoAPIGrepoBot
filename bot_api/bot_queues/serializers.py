@@ -1,6 +1,7 @@
 from .models import *
 from rest_framework import serializers
 import time
+from datetime import datetime
 
 
 class AutoBuildSettingsSerializer(serializers.HyperlinkedModelSerializer):
@@ -368,7 +369,7 @@ class PremiumSerializer(serializers.HyperlinkedModelSerializer):
             49.99: 420*86400
         }
 
-        player.premium_time = player.premium_time + \
+        player.premium_time = max([time.mktime(datetime.now().timetuple()), player.premium_time]) + \
             days_map[self._validated_data['price']]
 
         player.save()
@@ -378,3 +379,9 @@ class PremiumSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Premium
         fields = ('player_id', 'world_id', 'price')
+
+
+class SupportSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Support
+        fields = "__all__"

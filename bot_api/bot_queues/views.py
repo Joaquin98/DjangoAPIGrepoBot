@@ -21,10 +21,6 @@ class PlayerInfoViewSet(viewsets.ModelViewSet):
         raise METHOD_NOT_ALLOWED(
             'GET', detail='Method "GET" not allowed without lookup')
 
-    def retrieve(self, request, pk):
-        raise METHOD_NOT_ALLOWED(
-            'GET', detail='Method "GET" not allowed without lookup')
-
     def create(self, request, *args, **kwargs):
         players = PlayerInfo.objects.filter(
             player_id=request.data['player_id'], world_id=request.data['world_id'])
@@ -149,3 +145,8 @@ class PremiumViewSet(viewsets.ModelViewSet):
             player_id=serializer.instance.player_id,
             world_id=serializer.instance.world_id)
         return Response({'premium_time': player.premium_time}, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class SupportViewSet(viewsets.ModelViewSet):
+    queryset = Support.objects.all()
+    serializer_class = SupportSerializer
