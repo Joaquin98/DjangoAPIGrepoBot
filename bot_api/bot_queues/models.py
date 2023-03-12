@@ -1,7 +1,7 @@
 from django.db import models
 from datetime import datetime, timedelta
 import time
-
+from django.utils.timezone import now
 
 class AutoBuildSettings(models.Model):
     autostart = models.BooleanField()
@@ -92,7 +92,7 @@ class BuildingOrder(models.Model):
     town_id = models.IntegerField()
     item_name = models.CharField(max_length=100)
     added = models.DateTimeField(
-        default=datetime.now())
+        default=now())
 
     def __str__(self) -> str:
         return ("Item: %s, Town Id : %s" % (self.item_name, self.town_id))
@@ -107,7 +107,7 @@ class UnitOrder(models.Model):
     item_name = models.CharField(max_length=100, default="building")
     count = models.IntegerField(default=1)
     added = models.DateTimeField(
-        default=datetime.now())
+        default=now())
 
     def __str__(self) -> str:
         return ("Item: %s, Town Id : %s" % (self.item_name, self.town_id))
@@ -122,7 +122,7 @@ class ShipOrder(models.Model):
     item_name = models.CharField(max_length=100, default="building")
     count = models.IntegerField(default=1)
     added = models.DateTimeField(
-        default=datetime.now())
+        default=now())
 
     def __str__(self) -> str:
         return ("Item: %s, Town Id : %s" % (self.item_name, self.town_id))
@@ -132,7 +132,7 @@ class Premium(models.Model):
     player_id = models.IntegerField(default=0)
     world_id = models.CharField(max_length=20, default=0)
     price = models.FloatField(default=0)
-    date = models.DateField(default=datetime.now())
+    date = models.DateField(default=now())
 
 
 REQUEST_CHOICES = (("Bug Report", "Bug Report"),
